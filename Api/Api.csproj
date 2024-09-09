@@ -1,12 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-		<InvariantGlobalization>true</InvariantGlobalization>
-		<PublishAot>true</PublishAot>
+		<PublishAot>false</PublishAot>
+		<IsAotCompatible>false</IsAotCompatible>
+		<OptimizationPreference>Speed</OptimizationPreference>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<UserSecretsId>5ddca6f3-d0dc-4288-9aec-3cbf09e065f6</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -16,8 +18,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8"/>
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0"/>
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1"/>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
 		<PackageReference Include="Serilog" Version="4.0.1"/>
 		<PackageReference Include="Serilog.AspNetCore" Version="8.0.2"/>
 		<PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0"/>
@@ -26,6 +30,14 @@
 		<PackageReference Include="SerilogAnalyzer" Version="0.15.0"/>
 		<PackageReference Include="System.Linq.Async" Version="6.0.1"/>
 		<PackageReference Include="System.Linq.Async.Queryable" Version="6.0.1"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Database\Database.csproj"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="Properties\launchSettings.json"/>
 	</ItemGroup>
 
 </Project>

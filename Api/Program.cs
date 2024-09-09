@@ -1,36 +1,65 @@
-using System.Text.Json.Serialization;
+using System.Runtime;
+using Api.Controllers;
+using Api.Extensions;
+using Api.Filters;
+using Api.Serializers;
+using Database;
+using Serilog;
+
+GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+GCSettings.LatencyMode                   = GCLatencyMode.Interactive;
+
+Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
+									  .WriteTo.Console(
+													   outputTemplate:
+													   "[{Timestamp:HH:mm:ss} {Level,4:u4}] {Message:lj}{NewLine}{Exception}"
+													  )
+									  .CreateLogger();
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
-builder.Services.ConfigureHttpJsonOptions(
-										  options =>
-										  {
-											  options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
-										  }
-										 );
+builder.Services.AddSerilog()
+	   .ConfigureHttpJsonOptions(
+								 options => { options.SerializerOptions.TypeInfoResolverChain.Insert(0, TaskSerializationContext.Default); }
+								)
+	   .AddDatabaseServices()
+	   .AddAuth(builder);
+
+/*builder.Services.AddAuthorizationBuilder()
+	   .AddPolicy("test", policy => );*/
 
 var app = builder.Build();
 
-var sampleTodos = new Todo[]
-{
-	new(1, "Walk the dog"), new(2, "Do the dishes", DateOnly.FromDateTime(DateTime.Now)),
-	new(3, "Do the laundry", DateOnly.FromDateTime(DateTime.Now.AddDays(1))), new(4, "Clean the bathroom"),
-	new(5, "Clean the car", DateOnly.FromDateTime(DateTime.Now.AddDays(2)))
-};
+app.UseSerilogRequestLogging();
+app.UseCors();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseAntiforgery();
 
-var todosApi = app.MapGroup("/todos");
-todosApi.MapGet("/", () => sampleTodos);
+var usersApi = app.MapGroup("/users");
 
-todosApi.MapGet("/{id}", (int id) => sampleTodos.FirstOrDefault(a => a.Id == id) is { } todo ? Results.Ok(todo) : Results.NotFound());
+usersApi.MapPost("/register", UsersController.CreateUser)
+		.AllowAnonymous()
+		.AddEndpointFilter<EmailValidation>()
+		.AddEndpointFilter<LoginFormValidation>();
 
-app.Run();
+usersApi.MapPost("/login", UsersController.Login).AllowAnonymous().AddEndpointFilter<LoginFormValidation>();
 
-public record Todo(
-		int       Id,
-		string?   Title,
-		DateOnly? DueBy      = null,
-		bool      IsComplete = false
-);
+var tasksApi = app.MapGroup("/tasks");
 
-[JsonSerializable(typeof(Todo[]))]
-internal partial class AppJsonSerializerContext : JsonSerializerContext { }
+tasksApi.MapPost("/", TasksController.CreateTask)
+		.RequireAuthorization()
+		.AddEndpointFilter<JwtCheckFilter>()
+		.AddEndpointFilter<TaskRequestValidation>();
+
+tasksApi.MapGet("/",          TasksController.GetTasks).RequireAuthorization().AddEndpointFilter<JwtCheckFilter>();
+tasksApi.MapGet("/{id:guid}", TasksController.GetTask).RequireAuthorization().AddEndpointFilter<JwtCheckFilter>();
+
+tasksApi.MapPut("/{id:guid}", TasksController.UpdateTask)
+		.RequireAuthorization()
+		.AddEndpointFilter<JwtCheckFilter>()
+		.AddEndpointFilter<TaskRequestValidation>();
+
+tasksApi.MapDelete("/{id:guid}", TasksController.DeleteTask).RequireAuthorization().AddEndpointFilter<JwtCheckFilter>();
+
+app.Run(Environment.GetEnvironmentVariable("applicationUrl"));

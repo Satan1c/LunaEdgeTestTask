@@ -1,0 +1,52 @@
+@Api_HostAddress = http://localhost:5009
+@id = 10d021ad-5fb5-458a-9159-111122c97731
+@authorization = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzNWUxZmEzNS0wMjk5LTQyYzUtOTUyMS0wY2Q4OWNlNGMyM2MiLCJuYmYiOjE3MjU4ODQwOTAsImV4cCI6MTcyNzA5MzY5MCwiaWF0IjoxNzI1ODg0MDkwLCJpc3MiOiJkb3RuZXQtdXNlci1qd3RzIiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MDA5In0.PXvyyM7wDtLhfwdSDpzCcqdZW3UUS3erLWjBKaR6OEY
+
+GET {{Api_HostAddress}}/tasks
+Accept: application/json
+Authorization: {{authorization}}
+
+###
+GET {{Api_HostAddress}}/tasks?status=-1
+Accept: application/json
+Authorization: {{authorization}}
+
+###
+
+GET {{Api_HostAddress}}/tasks/{{id}}
+Accept: application/json
+Authorization: {{authorization}}
+
+###
+GET {{Api_HostAddress}}/tasks/10d021ad-5fb5-458a-9159-111122c97732
+Accept: application/json
+Authorization: {{authorization}}
+
+###
+
+POST {{Api_HostAddress}}/tasks/
+Authorization: {{authorization}}
+Content-Type: application/json
+
+{
+  "title": "Test task title",
+  "status": 1,
+  "priority": 2
+}
+
+###
+
+PUT {{Api_HostAddress}}/tasks/{{id}}
+Authorization: {{authorization}}
+Content-Type: application/json
+
+{
+  "title": "Title"
+}
+
+###
+
+DELETE {{Api_HostAddress}}/tasks/{{id}}
+Authorization: {{authorization}}
+
+###

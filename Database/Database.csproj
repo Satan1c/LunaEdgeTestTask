@@ -3,21 +3,19 @@
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
+		<ServerGarbageCollection>true</ServerGarbageCollection>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<PublishAot>false</PublishAot>
+		<IsAotCompatible>false</IsAotCompatible>
+		<OptimizationPreference>Speed</OptimizationPreference>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Content Include="..\.dockerignore">
-			<Link>.dockerignore</Link>
-		</Content>
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8"/>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="8.0.8"/>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="8.0.8"/>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.8"/>
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0"/>
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0"/>
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1"/>
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4"/>
@@ -29,6 +27,10 @@
 		<PackageReference Include="SerilogAnalyzer" Version="0.15.0"/>
 		<PackageReference Include="System.Linq.Async" Version="6.0.1"/>
 		<PackageReference Include="System.Linq.Async.Queryable" Version="6.0.1"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="Properties\launchSettings.json"/>
 	</ItemGroup>
 
 </Project>

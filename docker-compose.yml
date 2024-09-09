@@ -4,8 +4,3 @@
     build:
       context: .
       dockerfile: Api/Dockerfile
-  database:
-    image: database
-    build:
-      context: .
-      dockerfile: Database/Dockerfile
