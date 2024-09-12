@@ -22,5 +22,5 @@ public static class ErrorResponses
 		=> TypedResults.Problem(GetErrorResponse(title, message, HttpStatusCode.Unauthorized));
 
 	public static NotFound<ProblemDetails> NotFound(string message)
-		=> TypedResults.NotFound(GetErrorResponse(message, HttpStatusCode.Unauthorized));
+		=> TypedResults.NotFound(GetErrorResponse(message, HttpStatusCode.NotFound));
 }

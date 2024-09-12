@@ -12,16 +12,21 @@ public static class JwtGenerator
 {
 	private static string[]             s_validAudiences;
 	private static string               s_validIssuer;
-	private static SymmetricSecurityKey s_issuerSigningKey;
 	private static byte[]               s_keyBytes;
+	private static SymmetricSecurityKey s_issuerSigningKey;
 
-	public static IServiceCollection AddAuth(this IServiceCollection serviceCollection, WebApplicationBuilder builder)
+	public static void Initialize(WebApplicationBuilder builder)
 	{
 		s_validAudiences = builder.Configuration.GetSection("Authentication:Schemes:JwtBearer:ValidAudiences").Get<string[]>()!;
 		s_validIssuer    = builder.Configuration["Authentication:Schemes:JwtBearer:ValidIssuer"]!;
 
 		s_keyBytes         = Convert.FromBase64String(builder.Configuration["Authentication:Schemes:JwtBearer:Key"]!);
 		s_issuerSigningKey = new SymmetricSecurityKey(s_keyBytes);
+	}
+
+	public static IServiceCollection AddAuth(this IServiceCollection serviceCollection, WebApplicationBuilder builder)
+	{
+		Initialize(builder);
 
 		serviceCollection.AddAntiforgery()
 						 .AddCors()
@@ -50,7 +55,7 @@ public static class JwtGenerator
 		return serviceCollection;
 	}
 
-	public static TokenValidationParameters BearerValidationParameters()
+	private static TokenValidationParameters BearerValidationParameters()
 		=> new()
 		{
 			ValidateIssuer           = true,
@@ -78,7 +83,7 @@ public static class JwtGenerator
 			IssuedAt           = DateTime.UtcNow,
 			Expires            = DateTime.UtcNow.AddDays(14),
 			SigningCredentials = new SigningCredentials(s_issuerSigningKey, SecurityAlgorithms.HmacSha256),
-			Audience           = s_validAudiences[0],
+			Audience           = s_validAudiences.First(),
 			Issuer             = s_validIssuer
 		};
 

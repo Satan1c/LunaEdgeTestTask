@@ -35,7 +35,7 @@ public static partial class Extensions
 		=> new() { UserId = user.Id, Token = JwtGenerator.GenerateToken(user.Id.ToString()) };
 
 	public static CancellationToken GetToken(this EndpointFilterInvocationContext context)
-		=> context.GetArgument<CancellationToken>(context.Arguments.Count - 1);
+		=> context.Arguments.OfType<CancellationToken>().FirstOrDefault();
 
 	public static Guid GetUserId(this ClaimsPrincipal userInfo) => new(userInfo.FindFirstValue(JwtRegisteredClaimNames.Jti)!);
 

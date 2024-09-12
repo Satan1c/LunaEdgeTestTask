@@ -15,5 +15,5 @@ public class TokenInfo : BaseModel
 	[Column("token")]
 	[Required]
 	[JsonPropertyName("token")]
-	public string Token { get; set; }
+	public string Token { get; set; } = string.Empty;
 }
